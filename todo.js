@@ -4,12 +4,13 @@
   var inbox = document.getElementById("inbox");
   var icon_add =document.getElementById("icon-add");
   ///////////////////////////// variable of data
-  var arr=[];
+  var arr=[] , z=[] ;
   var obj={};
   //////////////////////////// add event listener 
     input.addEventListener("click",function(){  input.value=""; });
     input.addEventListener("input",change_input);
     icon_add.addEventListener("click" ,main); 
+    const my =new Headers();
   /////////////////////////////function key Enter
     input.addEventListener("keydown",function(e){
         if(e.key==="Enter"){
@@ -19,16 +20,28 @@
     ///////////////////////FUNCTION MAIN 
     function main (){
             if(  input.value !== ""){
-            obj={
-            value :input.value,
-            bool:false 
+          //   obj={
+          //   value :input.value,
+          //   bool: 0
+          // }
+          const my = new Headers();
+          //// false ==0 & true ===1 
+my.append('Content-Type', 'application/json');
+ fetch('http://localhost:4000/todo',{
+        method:'POST',
+        headers : my , 
+        body:JSON.stringify({
+         input  :input.value,
+         status : 0
+        })
+    }).then( response=>response.json()) .then((data) => {
+      console.log(data);
+           draw(data);
+            });
           }
-           arr.push(obj);
-           draw(arr);
-        }
         else {
         alert("This input is empty");}
-        }
+     }   
   function change_input(){
          this.style="background:rgb(223, 207, 207)";
         inbox.style="background:rgb(223, 207, 207)";
@@ -51,12 +64,15 @@ div.innerHTML='<div id="text-up" class="text-up">'+
 }
 function creat_li (obj ){ 
    var ul_li = document.getElementById("ul-li");
-  ul_li.innerHTML+= '<li class="text" id="text">'+'<p class="p">'+'<img src= "icon empty.png" onclick="click_icon_empty(event)" id="icon-empty"  ss = '+ arr.indexOf(obj) +' class="icon-empty" />'+'</p>'+'<span id="span" class="span">'+obj.value+'</span>'+'<img  src="icon x.png" id="icon-x" onclick="click_x(event)" mm = '+ arr.indexOf(obj) +' class="icon-x">'+'</li>';
+  ul_li.innerHTML+= '<li class="text" id="text">'+'<p class="p">'+'<img src= "icon empty.png" onclick="click_icon_empty(event)" id="icon-empty"  ss = '+ obj.id +' class="icon-empty" />'+'</p>'+'<span id="span" class="span">'+obj.input+'</span>'+'<img  src="icon x.png" id="icon-x" onclick="click_x(event)" mm = '+ obj.id +' class="icon-x">'+'</li>';
 }
 ////////////////////////////////////////functions 
 function click_icon_empty(event) {
-const index = event.target.getAttribute('ss');
-arr[index].bool=!arr[index].bool;
+const index = (event.target.getAttribute('ss'))*1 ;
+console.log(index);
+if(arr[index].status==1 ){arr[index].status=0};
+if(arr[index].status==0 ){arr[index].status=1};
+
 draw(arr);
 }
   function click_x(event) 
@@ -66,40 +82,52 @@ draw(arr);
   draw(arr);  
   }
  function click_complete_all(){
-arr.forEach(ob=>ob.bool=true);
+arr.forEach(ob=>ob.status=1);
 draw(arr);
 }
 function click_clear_complete(){ 
-const tt = arr.filter(ob =>ob.bool===false );
+const tt = arr.filter(ob =>ob.status===0 );
    arr = tt;
    draw(arr);
 }
   function click_complete (){ 
-    var t= arr.filter(ob=>ob.bool ===true);
+    var t= arr.filter(ob=>ob.status ===1);
       draw(t); 
   }
   function click_uncomplete (){
-    var t= arr.filter(ob=>ob.bool ===false);
+    var t= arr.filter(ob=>ob.status ===1);
       draw(t); 
   }
   function click_all (){
     draw(arr);
   }
  ///////////////////////function draw
-  function draw (arr){
-     div.innerHTML="";
+  function draw (arr){ 
+    // div.innerHTML="";
+    fetch('http://localhost:4000/todo',{
+        method:'GET', 
+        headers : my 
+    })
+    .then( res => res.json())
+    .then((data) => {
+    // console.log(data);
+     z = data ;
+     console.log(z);
+     
+   
     creat_div();
-    arr.forEach((ob , i)=> {
+    data.forEach((ob , i)=> {
       creat_li(ob);
-     if(ob.bool){
-      document.getElementsByClassName("p")[i].innerHTML ='<img src="icon1right.png"  alt="icon1right.png" onclick="click_icon_empty(event)" id="icon1right"  class="icon1right" ss = '+ i +' />';
+     if(ob.status==1){
+      document.getElementsByClassName("p")[i].innerHTML ='<img src="icon1right.png"  alt="icon1right.png" onclick="click_icon_empty(event)" id="icon1right"  class="icon1right" ss = '+ ob.id +' />';
       document.getElementsByClassName("span")[i].style= "text-decoration-line :line-through ";
      } else {
-      document.getElementsByClassName("p")[i].innerHTML ='<img src= "icon empty.png" onclick="click_icon_empty(event)" id="icon-empty"  ss = '+ i +' class="icon-empty" />';
+      document.getElementsByClassName("p")[i].innerHTML ='<img src= "icon empty.png" onclick="click_icon_empty(event)" id="icon-empty"  ss = '+ ob.id +' class="icon-empty" />';
       document.getElementsByClassName("span")[i].style= "text-decoration-line :none ";
     }
     });
      document.getElementById("counter").style = "color:black" ;
      document.getElementById("counter").innerHTML=arr.length ;
-  }
-
+  
+   });
+}

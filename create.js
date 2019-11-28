@@ -1,43 +1,44 @@
  const express = require('express');
  const app = express();
  const bodyParser = require('body-parser');
- const port = 5000 ; 
+ const port = 4000 ; 
  var alldata =[] ,item , index ;
  var mysql = require('mysql');
 var con = mysql.createConnection({
   host: "localhost",
   user: "root",
- // password:"root" ,
-  password: "1234" ,
- database: "st"
+  password:"root" ,
+  // password: "1234" ,
+ database: "todo"
 }); 
 let pagesize=5;
 con.connect(function(err) {
   if (err) throw err ;  console.log("Connected!");
-  // con.query("CREATE DATABASE st", function (err, result) { if (err) throw err;  console.log("Database created"); });
+// con.query("CREATE DATABASE todo", function (err, result) { if (err) throw err;  console.log("Database created"); });
 
-//   var sql ="CREATE TABLE student (id INT UNSIGNED NOT NULL AUTO_INCREMENT , firstName VARCHAR(255) NOT NULL , lastName VARCHAR(255) NOT NULL  , grade INT UNSIGNED , PRIMARY KEY (`id`) ) ";
+//   var sql ="CREATE TABLE data (id INT UNSIGNED NOT NULL AUTO_INCREMENT ," +
+//  " input VARCHAR(255) NOT NULL , status  BOOLEAN , PRIMARY KEY (`id`) ) ";
 // con.query(sql, function (err, result) {  if (err) throw err ;   console.log("Table created"); });
 
 //   var sql ="INSERT INTO student (firstName, LastName , grade ) VALUES ('Francesco', 'Lenahan' , '78')";
 //   con.query(sql, function (err, result) {  if (err) throw err;   console.log("insert created");});
 
-   var sql ="SELECT * FROM student ";
+   var sql ="SELECT * FROM  data ";
               con.query(sql, function (err, result) {
               if (err) throw err;
               console.log("select created");
               alldata= result;
- 
+ console.log(alldata);
     
-    app.get('/student', (req, res) =>{
-                  let page=req.query.page;
+    app.get('/todo', (req, res) =>{
+                 // let page=req.query.page;
               res.header("Access-Control-Allow-Origin", "*");
               res.header("Access-Control-Allow-Headers", "*");
-              start=(page-1)*pagesize;
-                end=start+ pagesize;
-                res.send(result.slice(start,end));
+              // start=(page-1)*pagesize;
+              //  end=start+ pagesize;.slice(start,end)
+                res.send(result);
               });
-});
+ });
 
 app.get( "/student/:id", (req, res) =>{
                 let id=req.params.id;
@@ -58,18 +59,18 @@ app.get( "/student/:id", (req, res) =>{
 });
 
             app.use(bodyParser.json());
-            app.post( "/student", (req, res) =>{
-              let todo = [  req.body.firstName,    req.body.lastName ,  req.body.grade ] ,
-                    sqlp ="INSERT INTO student  ( `firstName`, `lastName`,`grade`) VALUES ( '" +
-                      todo[0] +" ', '" + todo[1] + "',' " + todo[2] + "' ) ;" ;
+            app.post( "/todo", (req, res) =>{
+              let a = [  req.body.input,    req.body.status  ] ,
+                    sqlp ="INSERT INTO data  ( `input`, `status`) VALUES ( '" +
+                      a[0] +" ', '" + a[1] +  "' ) ;" ;
 
                     con.query(sqlp, function (err, result) {
                     if (err) throw err;
-                    let n = { id :result.insertId , firstName : todo[0]  , lastName : todo[1] , grade : todo[2]};
+                    let n = { id :result.insertId , input : a[0]  , status : a[1] };
                     alldata.push (n);
                     console.log(n);
-                    console.log(todo);
-                    return res.status(201).send(todo);  
+                    console.log(a);
+                    return res.status(201).send(n);  
                   });
                 });
 

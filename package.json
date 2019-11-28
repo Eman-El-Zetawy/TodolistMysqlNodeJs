@@ -1,0 +1,12 @@
+{
+  "name": "TodolistMysqlNodeJs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Eman-El-Zetawy/TodolistMysqlNodeJs",
+  "author": "Eman-El-Zetawy <dovprogrammer@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1"
+  }
+}
