@@ -26,7 +26,17 @@
           // }
           const my = new Headers();
           //// false ==0 & true ===1 
-my.append('Content-Type', 'application/json');
+my.append('Content-Type', 'application/json'); 
+fetch('http://localhost:4000/todo',{
+        method:'GET', 
+        headers : my 
+    })
+    .then( res => res.json())
+    .then((data) => {
+    // console.log(data);
+     z = data ;
+     console.log(z);
+    draw(z);});
  fetch('http://localhost:4000/todo',{
         method:'POST',
         headers : my , 
@@ -36,8 +46,9 @@ my.append('Content-Type', 'application/json');
         })
     }).then( response=>response.json()) .then((data) => {
       console.log(data);
-           draw(data);
+           //draw(data);
             });
+            console.log(z);
           }
         else {
         alert("This input is empty");}
@@ -68,12 +79,12 @@ function creat_li (obj ){
 }
 ////////////////////////////////////////functions 
 function click_icon_empty(event) {
-const index = (event.target.getAttribute('ss'))*1 ;
+const index = (event.target.getAttribute('ss'))*1 -1 ;
 console.log(index);
-if(arr[index].status==1 ){arr[index].status=0};
-if(arr[index].status==0 ){arr[index].status=1};
-
-draw(arr);
+if(z[index].status==1 ){z[index].status=0};
+if(z[index].status==0 ){z[index].status=1};
+console.log(z[index]);
+draw(z);
 }
   function click_x(event) 
   {
@@ -104,19 +115,8 @@ const tt = arr.filter(ob =>ob.status===0 );
  ///////////////////////function draw
   function draw (arr){ 
     // div.innerHTML="";
-    fetch('http://localhost:4000/todo',{
-        method:'GET', 
-        headers : my 
-    })
-    .then( res => res.json())
-    .then((data) => {
-    // console.log(data);
-     z = data ;
-     console.log(z);
-     
-   
     creat_div();
-    data.forEach((ob , i)=> {
+    arr.forEach((ob , i)=> {
       creat_li(ob);
      if(ob.status==1){
       document.getElementsByClassName("p")[i].innerHTML ='<img src="icon1right.png"  alt="icon1right.png" onclick="click_icon_empty(event)" id="icon1right"  class="icon1right" ss = '+ ob.id +' />';
@@ -129,5 +129,5 @@ const tt = arr.filter(ob =>ob.status===0 );
      document.getElementById("counter").style = "color:black" ;
      document.getElementById("counter").innerHTML=arr.length ;
   
-   });
+   
 }
