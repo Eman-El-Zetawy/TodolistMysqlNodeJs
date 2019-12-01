@@ -26,17 +26,7 @@
           // }
           const my = new Headers();
           //// false ==0 & true ===1 
-my.append('Content-Type', 'application/json'); 
-fetch('http://localhost:4000/todo',{
-        method:'GET', 
-        headers : my 
-    })
-    .then( res => res.json())
-    .then((data) => {
-    // console.log(data);
-     z = data ;
-     console.log(z);
-    draw(z);});
+  my.append('Content-Type', 'application/json');
  fetch('http://localhost:4000/todo',{
         method:'POST',
         headers : my , 
@@ -46,9 +36,20 @@ fetch('http://localhost:4000/todo',{
         })
     }).then( response=>response.json()) .then((data) => {
       console.log(data);
-           //draw(data);
+         
             });
-            console.log(z);
+         fetch('http://localhost:4000/todo',{
+                method:'GET', 
+                headers : my 
+            })
+            .then( res => res.json())
+            .then((data) => {
+             console.log(data);
+            // z = data ;
+            // console.log(z);
+             draw(z);
+          });
+      
           }
         else {
         alert("This input is empty");}
@@ -76,48 +77,98 @@ div.innerHTML='<div id="text-up" class="text-up">'+
 function creat_li (obj ){ 
    var ul_li = document.getElementById("ul-li");
   ul_li.innerHTML+= '<li class="text" id="text">'+'<p class="p">'+'<img src= "icon empty.png" onclick="click_icon_empty(event)" id="icon-empty"  ss = '+ obj.id +' class="icon-empty" />'+'</p>'+'<span id="span" class="span">'+obj.input+'</span>'+'<img  src="icon x.png" id="icon-x" onclick="click_x(event)" mm = '+ obj.id +' class="icon-x">'+'</li>';
-}
+   }
 ////////////////////////////////////////functions 
 function click_icon_empty(event) {
-const index = (event.target.getAttribute('ss'))*1 -1 ;
+const index =event.target.getAttribute('ss') ;
 console.log(index);
-if(z[index].status==1 ){z[index].status=0};
-if(z[index].status==0 ){z[index].status=1};
-console.log(z[index]);
-draw(z);
+let  b ;
+z.forEach((t , i )=>{
+   if(t.id == index){
+     b=t ;
+     if(t.status === 1){t.status=0 }
+     if(t.status === 0){t.status=1}  
+   
+  my.append('Content-Type', 'application/json');
+ fetch('http://localhost:4000/todo/'+ index ,{
+        method:'PUT',
+        headers : my , 
+        body: JSON.stringify({
+          status : b.status 
+        })
+    }).then( response=>response.json()).then((data) => {
+      console.log(data) ; draw(data);
+    });} });
+console.log(b);
+
 }
   function click_x(event) 
   {
-    const index = event.target.getAttribute('mm');
-  arr.splice(index,1);
-  draw(arr);  
+    const index = (event.target.getAttribute('mm')) ;
+  z.splice(index,1);
+  console.log(index);
+  fetch('http://localhost:4000/todo/'+ index ,{
+    method:'DELETE', 
+})
+.then( res => res.json())
+.then(data => {  console.log(data);  draw(data);
+});
+   
   }
  function click_complete_all(){
-arr.forEach(ob=>ob.status=1);
-draw(arr);
+z.forEach(ob=>{
+  ob.status=1 ;
+  my.append('Content-Type', 'application/json');
+  fetch('http://localhost:4000/todo/'+ ob.id ,{
+         method:'PUT',
+         headers : my , 
+         body: JSON.stringify({
+           status : ob.status
+         })
+     }).then( response=>response.json()).then((data) => {
+       console.log(data) ; draw(data);
+    
+    });
+})
+
 }
 function click_clear_complete(){ 
-const tt = arr.filter(ob =>ob.status===0 );
-   arr = tt;
-   draw(arr);
+const tt = z.filter(ob=>ob.status===1 );
+console.log(tt);
+tt.forEach((l, i )=>{
+  //  let s=l.id
+  z.splice(i,1);
+console.log(z);
+fetch('http://localhost:4000/todo/'+ l.id ,{
+  method:'DELETE', 
+})
+.then( res => res.json())
+.then(data => {  console.log(data);  draw(data);
+});
+
+})
+
 }
   function click_complete (){ 
-    var t= arr.filter(ob=>ob.status ===1);
+    var t= z.filter(ob=>ob.status ===1);
       draw(t); 
   }
   function click_uncomplete (){
-    var t= arr.filter(ob=>ob.status ===1);
+    var t= z.filter(ob=>ob.status ===0);
       draw(t); 
   }
   function click_all (){
-    draw(arr);
+    draw(z);
   }
  ///////////////////////function draw
   function draw (arr){ 
-    // div.innerHTML="";
+     div.innerHTML="";
     creat_div();
+    console.log(arr);
+
     arr.forEach((ob , i)=> {
       creat_li(ob);
+      
      if(ob.status==1){
       document.getElementsByClassName("p")[i].innerHTML ='<img src="icon1right.png"  alt="icon1right.png" onclick="click_icon_empty(event)" id="icon1right"  class="icon1right" ss = '+ ob.id +' />';
       document.getElementsByClassName("span")[i].style= "text-decoration-line :line-through ";
