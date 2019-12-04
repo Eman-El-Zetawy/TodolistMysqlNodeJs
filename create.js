@@ -7,8 +7,8 @@
 var con = mysql.createConnection({
   host: "localhost",
   user: "root",
-  // password:"root" ,
-  password: "1234" 
+  // password:"root" 
+   password: "1234" 
  , database: "todo"
 }); 
 let pagesize=5;
