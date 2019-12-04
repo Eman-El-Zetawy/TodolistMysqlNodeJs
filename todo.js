@@ -20,10 +20,6 @@
     ///////////////////////FUNCTION MAIN 
     function main (){
             if(  input.value !== ""){
-          //   obj={
-          //   value :input.value,
-          //   bool: 0
-          // }
           const my = new Headers();
           //// false ==0 & true ===1 
   my.append('Content-Type', 'application/json');
@@ -38,22 +34,21 @@
       console.log(data);
          
             });
+
          fetch('http://localhost:4000/todo',{
                 method:'GET', 
                 headers : my 
             })
             .then( res => res.json())
-            .then((data) => {
-             console.log(data);
-            // z = data ;
-            // console.log(z);
-             draw(z);
+            .then((data) => { console.log(data);z=data;
+             draw(data);
           });
       
           }
         else {
         alert("This input is empty");}
      }   
+
   function change_input(){
          this.style="background:rgb(223, 207, 207)";
         inbox.style="background:rgb(223, 207, 207)";
@@ -88,7 +83,6 @@ z.forEach((t , i )=>{
      b=t ;
      if(t.status === 1){t.status=0 }
      if(t.status === 0){t.status=1}  
-   
   my.append('Content-Type', 'application/json');
  fetch('http://localhost:4000/todo/'+ index ,{
         method:'PUT',
@@ -99,13 +93,20 @@ z.forEach((t , i )=>{
     }).then( response=>response.json()).then((data) => {
       console.log(data) ; draw(data);
     });} });
-console.log(b);
+
+ console.log(b);
 
 }
   function click_x(event) 
-  {
-    const index = (event.target.getAttribute('mm')) ;
-  z.splice(index,1);
+  {let l ;
+    const index = event.target.getAttribute('mm') ;
+     z.forEach((o,i)=>{
+        if( o.id == index){
+      l=i;
+      console.log(i);
+    }});
+     console.log(l);
+  z.splice(l,1);
   console.log(index);
   fetch('http://localhost:4000/todo/'+ index ,{
     method:'DELETE', 
@@ -117,7 +118,9 @@ console.log(b);
   }
  function click_complete_all(){
 z.forEach(ob=>{
-  ob.status=1 ;
+  ob.status=1 ;});
+
+  z.forEach(ob=>{ 
   my.append('Content-Type', 'application/json');
   fetch('http://localhost:4000/todo/'+ ob.id ,{
          method:'PUT',
@@ -136,7 +139,6 @@ function click_clear_complete(){
 const tt = z.filter(ob=>ob.status===1 );
 console.log(tt);
 tt.forEach((l, i )=>{
-  //  let s=l.id
   z.splice(i,1);
 console.log(z);
 fetch('http://localhost:4000/todo/'+ l.id ,{
@@ -160,12 +162,12 @@ fetch('http://localhost:4000/todo/'+ l.id ,{
   function click_all (){
     draw(z);
   }
+
  ///////////////////////function draw
   function draw (arr){ 
      div.innerHTML="";
     creat_div();
     console.log(arr);
-
     arr.forEach((ob , i)=> {
       creat_li(ob);
       

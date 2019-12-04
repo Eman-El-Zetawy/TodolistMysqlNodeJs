@@ -7,8 +7,8 @@
 var con = mysql.createConnection({
   host: "localhost",
   user: "root",
-  // password:"root" ,
-  password: "1234" 
+   password:"root" 
+ // password: "1234" 
  , database: "todo"
 }); 
 let pagesize=5;
@@ -88,23 +88,23 @@ con.connect(function(err) {
               });
  });
 
-app.get( "/student/:id", (req, res) =>{
-                let id=req.params.id;
-                var sqlid ="SELECT * FROM student WHERE id="+id;
-              res.header("Access-Control-Allow-Origin", "*");
-              res.header("Access-Control-Allow-Headers", "*");
-                con.query(sqlid, function (err, result) {
-                if (err) throw err;
-                console.log("select created\n");
-                console.log(result);
-              let thisId = result.find(i=>i.id==(id*1));
-              console.log(thisId);
-              if(thisId == undefined){
-                  res.send(id);
-              }
-              res.send(thisId);
-              });
-});
+// app.get( "/student/:id", (req, res) =>{
+//                 let id=req.params.id;
+//                 var sqlid ="SELECT * FROM student WHERE id="+id;
+//               res.header("Access-Control-Allow-Origin", "*");
+//               res.header("Access-Control-Allow-Headers", "*");
+//                 con.query(sqlid, function (err, result) {
+//                 if (err) throw err;
+//                 console.log("select created\n");
+//                 console.log(result);
+//               let thisId = result.find(i=>i.id==(id*1));
+//               console.log(thisId);
+//               if(thisId == undefined){
+//                   res.send(id);
+//               }
+//               res.send(thisId);
+//               });
+// });
 
 app.listen(port);
 //DESCRIBE
