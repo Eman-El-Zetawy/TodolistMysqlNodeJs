@@ -4,7 +4,7 @@
   var inbox = document.getElementById("inbox");
   var icon_add =document.getElementById("icon-add");
   ///////////////////////////// variable of data
-  var arr=[] , z=[] ;
+  var  z=[] ;
   //////////////////////////// add event listener 
     input.addEventListener("click",function(){  input.value=""; });
     input.addEventListener("input",change_input);
@@ -18,10 +18,14 @@
           input.value="";
         } });
     ///////////////////////FUNCTION MAIN      //// false ==0 & true ===1 
-    function main (){
-            if(  input.value !== ""){
-    
- 
+     fetch('http://localhost:4000/todo',{
+                method:'GET', 
+                headers : my })  .then( res => res.json())  .then((data) => {z=data;  draw(z) ;});
+          
+
+          function main (){
+            if(  input.value !== ""){ 
+
   ///////////////////////////////////////////////////////////// 1
         fetch('http://localhost:4000/todo',{
                 method:'POST',
@@ -29,13 +33,9 @@
                 body:JSON.stringify({
                 input  :input.value,
                 status : 0 })
-            }).then( response=>response.json()) .then((data) => { console.log(data); });
+            }).then( response=>response.json()) .then((data) => { z.push(data) ; console.log(data); draw(z); });
 /////////////////////////////////////////////////////////////2
-         fetch('http://localhost:4000/todo',{
-                method:'GET', 
-                headers : my })
-            .then( res => res.json())
-            .then((data) => {z=data; draw(z); });
+         
           }
         else {
         alert("This input is empty");}
@@ -72,16 +72,17 @@ function creat_li (obj ){
 
 
 function click_icon_empty(event) {
-const index =event.target.getAttribute('ss') ;
+const index = event.target.getAttribute('ss') ;
 console.log(index);
 
-z.forEach((t , i )=>{
+z.forEach(t =>{
    if(t.id == index){
      
      if(t.status == 1){t.status = 0 }
      else {
-     if(t.status == 0){t.status = 1 } } 
-  // my.append('Content-Type', 'application/json');
+     if(t.status == 0){t.status = 1 } }
+        draw(z);
+ 
  fetch('http://localhost:4000/todo/'+ index ,{
         method:'PUT',
         headers : my , 
@@ -89,18 +90,16 @@ z.forEach((t , i )=>{
           status : t.status 
         })
     }).then( response=>response.json()).then((data) => {
-      console.log(data) ;
-       draw(data);
+      console.log("done put") ;
+     
     });} });
 
 } 
 
 function click_complete_all(){
 z.forEach(ob=>{
-  ob.status=1 ;});
-
-  z.forEach(ob=>{ 
- // my.append('Content-Type', 'application/json');
+  ob.status=1 ;
+ 
   fetch('http://localhost:4000/todo/'+ ob.id ,{
          method:'PUT',
          headers : my , 
@@ -108,56 +107,63 @@ z.forEach(ob=>{
            status : ob.status
          })
      }).then( response=>response.json()).then((data) => {
-        draw(data);
+       console.log("don put ")
     
-    });
-})
+    });});
+
+draw(z);
 
 }
   function click_x(event) 
   {let l ;
     const index = event.target.getAttribute('mm') ;
-     z.forEach((o,i)=>{
-        if( o.id == index){
-      l=i;
-      console.log(i);
-    }});
-     console.log(l);
-  z.splice(l,1);
-  console.log(index);
+
+     z.forEach((o,i)=>{ if( o.id == index){ l=i; }});
+        z.splice(l,1);
+        draw(z);
+
   fetch('http://localhost:4000/todo/'+ index ,{
     method:'DELETE', 
 })
 .then( res => res.json())
-.then(data => {  console.log(data);  draw(data);
+.then(data => { 
+  console.log("done delete "); 
 });
-   
+    
   }
 
 function click_clear_complete(){ 
-const tt = z.filter(ob=>ob.status == 1 );
-console.log(tt);
-tt.forEach((l, i )=>{
-  z.splice(i,1);
-console.log(z);
-fetch('http://localhost:4000/todo/'+ l.id ,{
+// const tt = z.filter(ob=>ob.status === 1 );
+// console.log(tt);
+// tt.forEach((l, i )=>{
+  // z.splice(i,1); /////////////////////here error 
+// console.log(z);});
+// draw(z);
+  console.log(z);
+
+    for (i = z.length-1  ; i >=0 ;i--){
+             console.log(z[i].status);
+  if(z[i].status== 1){
+fetch('http://localhost:4000/todo/'+ z[i].id ,{
   method:'DELETE', 
 })
 .then( res => res.json())
-.then(data => {  console.log(data);  draw(data);
+.then(data => {  console.log("done  delete" +  i );  
 });
-
-})
-
+    z.splice(i,1);}  
+  }
+draw(z); 
 }
+
   function click_complete (){ 
-    var t= z.filter(ob=>ob.status == 1);
+    var t= z.filter(ob=>ob.status === 1);
       draw(t); 
   }
   function click_uncomplete (){
-    var t= z.filter(ob=>ob.status ==  0);
+    var t= z.filter(ob=>ob.status ===  0);
       draw(t); 
   }
+
   function click_all (){
     draw(z);
   }
@@ -166,10 +172,8 @@ fetch('http://localhost:4000/todo/'+ l.id ,{
   function draw (arr){ 
      div.innerHTML="";
     creat_div();
-    // console.log(arr);
     arr.forEach((ob , i)=> {
       creat_li(ob);
-      
      if(ob.status == 1){
       document.getElementsByClassName("p")[i].innerHTML ='<img src="icon1right.png"  alt="icon1right.png" onclick="click_icon_empty(event)" id="icon1right"  class="icon1right" ss = '+ ob.id +' />';
       document.getElementsByClassName("span")[i].style= "text-decoration-line :line-through ";
@@ -181,5 +185,7 @@ fetch('http://localhost:4000/todo/'+ l.id ,{
      document.getElementById("counter").style = "color:black" ;
      document.getElementById("counter").innerHTML=arr.length ;
   
-   
+     if(z==''){
+            div.innerHTML="";
+           }
 }

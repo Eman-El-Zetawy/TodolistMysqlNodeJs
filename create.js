@@ -2,7 +2,7 @@
  const app = express();
  const bodyParser = require('body-parser');
  const port = 4000 ; 
- var arr =[] ,item ;
+// var arr =[] ,item ;
  var mysql = require('mysql');
 var con = mysql.createConnection({
   host: "localhost",
@@ -33,23 +33,26 @@ con.connect(function(err) {
                     con.query(s, function (err, result) {
                     if (err) throw err;
                     let n = { id :result.insertId , input : req.body.input  , status :req.body.status };
-                     arr.push (n);
+                    //  arr.push (n);
+                    console.log(result);
                     return res.status(201).send(n);  
                   }); }); 
 
 
       app.put('/todo/:id', (req, res) => {
                 let id=req.params.id;
-                arr.forEach((todo, i) => {
-                    if (todo.id == id) {
-                     todo.status = req.body.status  ; 
-                     item = todo ;
-                    } });
+                // arr.forEach((todo, i) => {
+                //     if (todo.id == id) {
+                //      todo.status = req.body.status  ; 
+                //      item = todo ;
+                //     } });
             
-              con.query("UPDATE data SET status = "+ item.status +" WHERE id = "+ id , function (err, result) {
+              con.query("UPDATE data SET status = "+ req.body.status +" WHERE id = "+ id , function (err, result) {
               if (err) throw err;
-            });  
-            return res.status(201).send(arr);  });
+              console.log(result);
+           
+            return res.status(201).send(result); 
+           });  }); 
 
 
 
@@ -57,12 +60,12 @@ con.connect(function(err) {
           app.delete('/todo/:id', (req, res) => {
                           let id=req.params.id;
 
-                          arr.map((todo, index) => {
-                            if (todo.id == id) { arr.splice(index, 1); }  });
+                          // arr.map((todo, index) => {
+                          //   if (todo.id == id) { arr.splice(index, 1); }  });
                           con.query("DELETE FROM data WHERE id = " + id , function (err, result) {
-                          if (err) throw err; });
-
-                          return res.send(arr); 
+                          if (err) throw err;
+                          // console.log(result.affectedRows);
+                          return res.status(201).send(result);  });
                         });
 
 
@@ -70,7 +73,7 @@ con.connect(function(err) {
     app.get('/todo', (req, res) =>{
               con.query("SELECT * FROM  data ", function (err, result) {
               if (err) throw err;
-              arr= result;
+              //  arr= result;
               res.header("Access-Control-Allow-Origin", "*");
               res.header("Access-Control-Allow-Headers", "*");
                 res.send(result);
@@ -79,4 +82,14 @@ con.connect(function(err) {
 
 
 app.listen(port);
-//DESCRIBE
+// //DESCRIBE
+// const months = ['Jan', 'March', 'April', 'June'];
+// months.splice(1, 0, 'Feb');
+// // inserts at index 1
+// console.log(months);
+// // expected output: Array ["Jan", "Feb", "March", "April", "June"]
+
+// months.splice(4, 1, 'May');
+// // replaces 1 element at index 4
+// console.log(months);
+// // expected output: Array ["Jan", "Feb", "March", "April", "May"]
