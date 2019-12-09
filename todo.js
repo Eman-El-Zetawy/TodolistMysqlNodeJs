@@ -115,44 +115,48 @@ draw(z);
 
 }
   function click_x(event) 
-  {let l ;
+  { const l=[];
     const index = event.target.getAttribute('mm') ;
+    l.push(index);
+     z.forEach((o,i)=>{ if( o.id == index){z.splice(i,1); }});
+        
 
-     z.forEach((o,i)=>{ if( o.id == index){ l=i; }});
-        z.splice(l,1);
-        draw(z);
-
-  fetch('http://localhost:4000/todo/'+ index ,{
+  fetch('http://localhost:4000/todo/',{
     method:'DELETE', 
+    headers : my , 
+    body:JSON.stringify({
+      id : l
+    })
 })
 .then( res => res.json())
-.then(data => { 
+.then(data => {
+   draw(z);
   console.log("done delete "); 
 });
     
   }
 
 function click_clear_complete(){ 
-// const tt = z.filter(ob=>ob.status === 1 );
-// console.log(tt);
-// tt.forEach((l, i )=>{
-  // z.splice(i,1); /////////////////////here error 
-// console.log(z);});
-// draw(z);
   console.log(z);
-
-    for (i = z.length-1  ; i >=0 ;i--){
-             console.log(z[i].status);
-  if(z[i].status== 1){
-fetch('http://localhost:4000/todo/'+ z[i].id ,{
-  method:'DELETE', 
+    const l=[];
+     z.forEach(ob=>{
+      if(ob.status===1){
+        l.push(ob.id);
+      }
+      console.log(l);
+    })
+      z = z.filter(ob=>ob.status===0);
+fetch('http://localhost:4000/todo/',{
+  method:'DELETE',
+  headers : my , 
+   body:JSON.stringify({
+    id : l
+  })
 })
 .then( res => res.json())
-.then(data => {  console.log("done  delete" +  i );  
+.then(data => {  draw(z);
+   console.log("done  delete"  );  
 });
-    z.splice(i,1);}  
-  }
-draw(z); 
 }
 
   function click_complete (){ 

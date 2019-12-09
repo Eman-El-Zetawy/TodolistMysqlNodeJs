@@ -2,7 +2,6 @@
  const app = express();
  const bodyParser = require('body-parser');
  const port = 4000 ; 
-// var arr =[] ,item ;
  var mysql = require('mysql');
 var con = mysql.createConnection({
   host: "localhost",
@@ -28,12 +27,11 @@ con.connect(function(err) {
 
             app.post( "/todo", (req, res) =>{
                    
-                 s ="INSERT INTO data  ( `input`, `status`) VALUES ( '" + req.body.input +" ', '" + req.body.status +  "' ) ;" ;
-
-                    con.query(s, function (err, result) {
+                 s ="INSERT INTO data  ( `input`, `status`) VALUES ( '" + req.body.input +" ', '" + req.body.status +  "' ) ;" 
+                   
+                 con.query(s, function (err, result) {
                     if (err) throw err;
                     let n = { id :result.insertId , input : req.body.input  , status :req.body.status };
-                    //  arr.push (n);
                     console.log(result);
                     return res.status(201).send(n);  
                   }); }); 
@@ -41,43 +39,31 @@ con.connect(function(err) {
 
       app.put('/todo/:id', (req, res) => {
                 let id=req.params.id;
-                // arr.forEach((todo, i) => {
-                //     if (todo.id == id) {
-                //      todo.status = req.body.status  ; 
-                //      item = todo ;
-                //     } });
-            
-              con.query("UPDATE data SET status = "+ req.body.status +" WHERE id = "+ id , function (err, result) {
-              if (err) throw err;
-              console.log(result);
-           
-            return res.status(201).send(result); 
-           });  }); 
+              con.query("UPDATE data SET status = "+ req.body.status +" WHERE id = "+ id ,
+               function (err, result) {
+                if (err) throw err;
+                 return res.status(201).send(result); 
+                   });}); 
 
 
 
 
-          app.delete('/todo/:id', (req, res) => {
-                          let id=req.params.id;
-
-                          // arr.map((todo, index) => {
-                          //   if (todo.id == id) { arr.splice(index, 1); }  });
-                          con.query("DELETE FROM data WHERE id = " + id , function (err, result) {
+          app.delete('/todo/', (req, res) => {
+                          let id=req.body.id;
+                          con.query("DELETE FROM data WHERE id IN (" + id +")", function (err, result) {
                           if (err) throw err;
-                          // console.log(result.affectedRows);
                           return res.status(201).send(result);  });
                         });
 
 
 
-    app.get('/todo', (req, res) =>{
-              con.query("SELECT * FROM  data ", function (err, result) {
-              if (err) throw err;
-              //  arr= result;
-              res.header("Access-Control-Allow-Origin", "*");
-              res.header("Access-Control-Allow-Headers", "*");
-                res.send(result);
-              });
+        app.get('/todo', (req, res) =>{
+                  con.query("SELECT * FROM  data ", function (err, result) {
+                  if (err) throw err ; 
+                  res.header("Access-Control-Allow-Origin", "*");
+                  res.header("Access-Control-Allow-Headers", "*");
+                    res.send(result);
+                  });
  });
 
 
